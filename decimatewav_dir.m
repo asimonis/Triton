@@ -107,8 +107,12 @@ for jj = 1:PARAMS.nfiles{ii}
     disp_msg(['File Number ', num2str(jj)])
     % these needed for rdxwavhd
     PARAMS.infile = deblank(PARAMS.fname{ii}(jj,:)); % get file names sequentally
-    PARAMS.outfile = [PARAMS.infile(1:length(PARAMS.infile)-extension_size),'.d',...
-        num2str(PARAMS.df),'.' wavType];
+    
+    %Updated outfile format without decimation factor
+    PARAMS.outfile = [PARAMS.infile(1:length(PARAMS.infile)-extension_size),'.' wavType];
+%   Original filename format containing decimation factor
+%       PARAMS.outfile = [PARAMS.infile(1:length(PARAMS.infile)-extension_size),'.d',...
+%         num2str(PARAMS.df),'.' wavType];
     PARAMS.xhd.dSubchunkSize = [];
     if strcmp(wavType, 'wav')
         rdwavhd
@@ -116,6 +120,7 @@ for jj = 1:PARAMS.nfiles{ii}
         %         [data,fs,nbits]=wavread([PARAMS.inpath,PARAMS.infile],'native');
         [data,fs] = audioread([PARAMS.inpath,PARAMS.infile], 'native');
         data = double(data);
+        data = data(:,PARAMS.ch);
         info = audioinfo([PARAMS.inpath,PARAMS.infile]);
         nbits = info.BitsPerSample;
         odata = decimate(double(data),PARAMS.df);
