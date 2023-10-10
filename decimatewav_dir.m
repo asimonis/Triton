@@ -37,7 +37,7 @@ PARAMS.nfiles{ii} = fnsz(1);   % number of files in directory
 disp_msg(['Number of ' wavType ' files in Input file directory is ',...
     num2str(PARAMS.nfiles{ii})])
 
-PARAMS.inpath = [PARAMS.idir{ii},'\'];
+PARAMS.inpath = [PARAMS.idir{ii},'/'];
 % first file's sample rate
 PARAMS.infile = deblank(PARAMS.fname{ii}(1,:));
 if strcmp(wavType,'wav')
@@ -87,7 +87,7 @@ else
     disp_msg([PARAMS.odir{ii}])
     %     disp(' ')
 end
-PARAMS.outpath = [PARAMS.odir{ii},'\'];
+PARAMS.outpath = [PARAMS.odir{ii},'/'];
 
 disp_msg('This takes a while, please wait')
 tic % start stopwatch timer
@@ -107,8 +107,12 @@ for jj = 1:PARAMS.nfiles{ii}
     disp_msg(['File Number ', num2str(jj)])
     % these needed for rdxwavhd
     PARAMS.infile = deblank(PARAMS.fname{ii}(jj,:)); % get file names sequentally
-    PARAMS.outfile = [PARAMS.infile(1:length(PARAMS.infile)-extension_size),'.d',...
-        num2str(PARAMS.df),'.' wavType];
+    
+    %Updated outfile format without decimation factor
+    PARAMS.outfile = [PARAMS.infile(1:length(PARAMS.infile)-extension_size),'.' wavType];
+%   Original filename format containing decimation factor
+%       PARAMS.outfile = [PARAMS.infile(1:length(PARAMS.infile)-extension_size),'.d',...
+%         num2str(PARAMS.df),'.' wavType];
     PARAMS.xhd.dSubchunkSize = [];
     if strcmp(wavType, 'wav')
         rdwavhd
@@ -116,6 +120,7 @@ for jj = 1:PARAMS.nfiles{ii}
         %         [data,fs,nbits]=wavread([PARAMS.inpath,PARAMS.infile],'native');
         [data,fs] = audioread([PARAMS.inpath,PARAMS.infile], 'native');
         data = double(data);
+        data = data(:,PARAMS.ch);
         info = audioinfo([PARAMS.inpath,PARAMS.infile]);
         nbits = info.BitsPerSample;
         odata = decimate(double(data),PARAMS.df);

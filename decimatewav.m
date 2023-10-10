@@ -74,9 +74,14 @@ else
 end
 
 % open new decimated output file
+%Updated outfile format without decimation factor
 % base name on input file
-PARAMS.outfile = [PARAMS.infile(1:length(PARAMS.infile)-extension_size),'.d',...
-    num2str(PARAMS.df),'.' wavType];
+PARAMS.outfile = [PARAMS.infile(1:length(PARAMS.infile)-extension_size),'.' wavType];
+
+% Original output filename including decimation factor
+% %base name on input file
+% PARAMS.outfile = [PARAMS.infile(1:length(PARAMS.infile)-extension_size),'.d',...
+%     num2str(PARAMS.df),'.' wavType];
 % PARAMS.outfile = strcat(PARAMS.infile(1:length(PARAMS.infile)-6),'.d',...
 %                                            num2str(PARAMS.df),'.',wavType);
 PARAMS.outpath = PARAMS.inpath;
@@ -107,7 +112,7 @@ if strcmp(wavType, 'wav')
         disp_msg(dmsg);
         return
     end
-    data = double(data);
+    data = double(data(:,PARAMS.ch));
     info = audioinfo([PARAMS.inpath,PARAMS.infile]);
     nbits = info.BitsPerSample;
     odata = decimate(double(data),PARAMS.df);
